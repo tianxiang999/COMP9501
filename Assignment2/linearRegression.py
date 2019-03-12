@@ -1,54 +1,58 @@
 __author__ = 'Alan Shen'
 
-import numpy
+import numpy,math
 
 def readMatrix(fileName):
-
+    lineNum = 0
     f = open(fileName, "r")
 
-    X = numpy.zeros(shape=(0,3))
-    Y = numpy.zeros(shape=(0,1))
+    X1 = numpy.zeros(shape=(0, 3))
+    Y1 = numpy.zeros(shape=(0, 1))
+    X2 = numpy.zeros(shape=(0, 3))
+    Y2 = numpy.zeros(shape=(0, 1))
+    next(f)
     for line in f:
-        line = line.replace("\n","");
-        x,y,z = line.split(",");
-        X = numpy.vstack([X, [1, float(x), float(y)]])
-        Y = numpy.vstack([Y, [float(z)]])
+        lineNum +=1
+        if lineNum <= 1000:
+            line.replace("\n", "");
+            x, y, z = line.split(" ");
+            X1 = numpy.vstack([X1, [1, float(x), float(y)]])
+            Y1 = numpy.vstack([Y1, [float(z)]])
+        else:
+            line.replace("\n", "");
+            x, y, z = line.split(" ");
+            X2 = numpy.vstack([X2, [1, float(x), float(y)]])
+            Y2 = numpy.vstack([Y2, [float(z)]])
 
     f.close()
-    return X,Y
+    return X1,Y1,X2,Y2
 
 
 def normalEquation(X, Y):
 
     #theta = pinv(X'*X)*X'*y;
-
     xT = numpy.transpose(X)
-
     var1 = xT.dot(X)
-
     var3 = numpy.linalg.pinv(var1);
-
     var4 = xT.dot(Y)
 
     theta = var3.dot(var4)
-
     return theta;
 
+def RSS_traingset(X,Y):
+    var = normalEquation(X, Y)
+    sum = 0
+    f = [lambda i=i: math.pow(Y[i]-numpy.matrix(X[i]).dot(var),2) for i in range(1000)]
+    for i in range(1000):
+        sum +=f[0](i)
+    return sum / 1000
+
 def main():
-    # Create matrix from file. Add x0 as all 1s to X so that Θ0 can be used as feature
-    X, Y = readMatrix('ex1data2.txt')
 
-    ## theta = pinv(X'*X)*X'*y;
-    theta = normalEquation(X, Y)
+    train_X, train_Y, test_X, test_Y = readMatrix('HW2_linear_regression.txt')
 
-    ## now that we have theta...we can start predicting
-    ## Given predict the price of a house with 1650 square feet and 3 bedrooms
+    print(RSS_traingset(train_X, train_Y))
 
-    var1 = numpy.matrix([1, 1650, 3])
-
-    predict_y = var1.dot(theta)
-
-    print("Predicted price of a 1650 sq-ft, 3 br house is:   ", predict_y)
 
 if __name__ == '__main__':
   main()
