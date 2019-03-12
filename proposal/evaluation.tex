@@ -1,0 +1,15 @@
+\section{Evaluation}
+
+We are going to evaluate the system using cluster tracing data from a real
+production environment. The data set contains data over about a month-long
+period. The data for the first three weeks are used for model training. The
+fourth week's data are used for evaluation. 
+
+In the simulation, requests are sent to the system, and the algorithm gives the
+predicted number of requests at the end of this time interval. Resources are
+deployed before the start of the next time interval. The duration of a time
+interval should be longer than the deployment time.
+
+The number of requests for each time-interval is collected and outputted with
+different confidence ranges. The accuracy of the prediction will be evaluated
+using several metrics.

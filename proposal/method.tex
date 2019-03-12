@@ -1,0 +1,84 @@
+\section{Methodology for Workload Prediction}
+
+This section presents our methodology for realizing the cluster workload
+prediction. There are two approaches to allocate the correct mount
+of resources dynamically. The first approach is reactive approach, where thresholds are
+defined in advance, and resources are increased or decreased when the thresholds
+are reached. Another approach is proactive approach. The key insight of this
+approach is that the workload changes are time-dependent, so the resource
+re-allocation can be triggered before the occurrence of load fluctuates. This
+approach can achieve better performance but requires the system to monitor and
+predict the workloads.
+
+In this study, we use machine learning to determine how many requests will come
+in the near future. The proposed system is consist of three components:
+\textit{workload collector}, \textit{predictor} and \textit{resource manager}.
+In the beginning, the historical data set is fed into the \textit{predictor}, which
+trains the model based on these data. When the system starts running, the
+\textit{predictor} gives an estimation of system workload with certain
+time-interval and \textit{resource manager} will allocate suitable resources
+according to the prediction. The time interval is assigned depending on the
+specific application requirements. During system operation, \textit{workload
+collector} collects the actual number of requests in each time-interval and feeds
+this data to the predictor to adjust model on-the-fly. 
+
+\subsection{Predictor}
+
+For a database service, it is very difficult to accurately predict the traffic.
+Usually people use an empirical approach to subjectively judge the workload of
+the next stage, but such an approach is not accurate enough, and once prediction
+fails, it can cause immeasurable adverse effects. For example, if traffic
+forecasts for Tmall\footnote{Tmall is a subsidiary of Alibaba, a famous
+e-commerce company in China.} Double 11 activities fails, a shortage of server
+resources can cause significant economic losses. This problem becomes
+increasingly serious, and there is an urgent need for a solution to predict the
+workload more accurately.
+
+In order to achieve better accuracy, we use machine learning (ML) methods to do
+prediction. Classic ML tasks include classification and regression. The goal of
+classification is that, give an object with parameters, using a model (e.g.
+Support Vector Machine) to determine the category of the object. The result is
+an exact value (e.g. Group ID). Whereas the outcome of regression tasks is a
+series of consecutive numbers, such as the predicted age of an adult.
+\textit{Logistic Regression}, \textit{Support Vector Machines} (SVM) and
+\textit{Random Forest} are three classic ML models, which have good performance
+on ML tasks. We will test the performance of these three models on traffic
+prediction problems. Next we will briefly introduce these three models. Further
+detailed methodology will be discussed in \S 3.
+
+\textit{Logistic Regression} (LR) is essentially a linear regression, except
+that a layer of function mapping is added to the feature-to-result mapping, that
+is, the features are first linearly summed, and then the most hypothetical
+function is used to predict using the function g(z). g(z) can map continuous
+values to 0 and 1.Its advantage is that the prediction outcome can be mapped
+between 0 and 1, so that the results are very clear. Also, it can be applied to
+both continuity and categorical independent variables.
+
+\textit{Support Vector Machines} (SVM) is a two-class model. Its purpose is to
+find a hyperplane to segment the sample. The principle of segmentation is to
+maximize the interval and finally transform it into a convex quadratic
+programming problem.The name "support vector" comes from the basic theory of the
+model: in the case of linear separability, an instance of the sample point
+closest to the separated hyperplane in the sample points of the training data
+set is called a support vector. SVM is essentially a nonlinear classifier, and
+its learning strategy is to maximize the interval.There are already some mature
+SVM tool kits available for use, such as Matlab's SVM toolbox, LIBSVM or SciKit
+Learn under the Python framework.
+
+\textit{Random Forest} (RF)RF combines the advantages of Bagging and the Decison
+Tree. Bagging has the feature of reducing the variance of different gt
+variances. This is because Bagging uses the form of voting to combine all the
+gts to achieve averaging, thus reducing variance. The Decision Tree has the
+feature of increasing the variance of different gt variances. Bagging can reduce
+variance, and Decision Tree can increase variance. RF combines the advantages of
+both and therefore performs well.
+
+\subsection{Optimization}
+
+To improve the prediction accuracy, two optimization methods: bootstrap
+aggregation (bagging) and boosting will be used. In bagging, several predictors
+are trained in parallel; their results are aggregated to the final prediction.
+Bagging can give substantial gains in accuracy. However, multiple predictors may
+have low accuracy for the same subset of data. We are going to use boosting to
+solve this problem. In this method, predictors are trained iteratively. In each
+iteration, data with poor accuracy will be assigned with higher weight.

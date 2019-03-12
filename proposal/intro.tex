@@ -1,0 +1,65 @@
+\section{Introduction}
+% Sentiment analysis has become a heated topic for understanding peoples'
+% opinions, attitudes, and emotions from texts (e.g., a tweet message). With the
+% advance of social networks, more and more opinion-rich resources are available
+% on the Internet that can help companies and the government to understand the
+% public promptly and accurately. For instance, Nike posted a controversial
+% advertisement campaign in 2017. Although there was a huge wave of negative
+% response on twitter, sentiment analysis shows that those in favor of the
+% campaign is still a large majority, so Nike kept the campaign and got a 31\%
+% increment in its sales~\cite{nike1, nike2}.  
+
+With the prevalence of cloud computing, more and more companies choose to deploy
+their service in the cloud. One key advantages of deploying service on the cloud
+over deploying on-premise cluster is that it can be scale-in and scale-out
+easily~\cite{cloud:scale}. For instance, a web service can deploy more servers
+(scale-out) during daytime to balance the loads and to handle more clients; the
+service can shutdown some of the server (scale-in) in midnight.  
+
+It is a challenging problem to making these scaling decisions in
+practice. Users' workload trend and distribution is unknown and may contain 
+spikes. Failing to handle these workload spikes may make server applications 
+to be overloaded, or even crashed. In 2018, Amazon failed to predict the
+huge amount of transactions in its Prime Day sale, which caused one of its 
+storage crashed and the service to be unavailable for an hour~\cite{amazon:down}. 
+
+Existing web development typically uses a passive scaling
+method~\cite{mao2010cloud, aws:scale, azure:scale}, where a server program does
+a scale-out operation if the workload exceed certain thresholds. However, this
+approach has two major drawbacks. First, this threshold-based method is
+sufficient for gradually-increased workloads but cannot handle workload spikes.
+If the workload increases suddenly, it needs some time before a scaling-out
+operation is completed. During that time, the service's Service Level Objective
+(SLO) is breached. Moreover, to avoid the application from crashing and losing
+data, this method needs to reject part of the user
+requests~\cite{zhou2018overload}, causing bad user experience. 
+
+Second, different from stateless applications (e.g., a web server) that can
+scale out easily, scaling out a stateful application (e.g., a database or a
+key-value store) takes a long time because scaling-out a stateful application
+involves expensive data replications. Letting a highly loaded or overloaded
+stateful application to does a scale-out operation will exacerbate its situation
+and greatly increase the time for finishing the scale-out
+operation~\cite{kulkarni2017rocksteady}. 
+
+
+Therefore, an active method that can predict workload spikes and scaling out in
+advance is highly desirable. Machine learning is a promising techniques to solve
+this problem. 
+% Although systems normally provides only a backend for
+% user-facing applications and does not interact with clients directly,
+% understanding the clients' requirement can help developers to build more
+% reliable and efficient systems. Previous work shows that sentiment
+% analysis can help to predict customer churns~\cite{wang2017customer,
+% lella2018churn, vo2018client}, which may dues to service quality or QoS problems.
+In this project, we are going to analyze the existing workload prediction
+algorithms and frameworks, compare their performance, and discuss their
+applicability in practice. Specifically, we will use online open source workload
+traces to train our model and evaluate its performance. Moreover, we are also
+considering combing workload-trace based model with sentiment analysis because
+some workload spikes may come from a social event. For instance, the aforementioned Amazon
+outrage was caused by the launching of a big sale.
+
+The remaining of the proposal is organized as follows. \S 2 describes the
+problem and the methods we are going to investigate. \S 3 presents the ways to
+evaluate the system performance.
