@@ -47,11 +47,26 @@ def RSS_traingset(X,Y):
         sum +=f[0](i)
     return sum / 1000
 
+def RSS_testingset(X,Y):
+    var = normalEquation(X, Y)
+    sum = 0
+    f = [lambda i=i: math.pow(Y[i]-numpy.matrix(X[i]).dot(var),2) for i in range(100)]
+    for i in range(100):
+        sum +=f[0](i)
+    return sum / 100
+
+def do_predict(X,Y):
+    return numpy.matrix([1, 1, 135]).dot(normalEquation(X,Y))
+
 def main():
 
     train_X, train_Y, test_X, test_Y = readMatrix('HW2_linear_regression.txt')
 
     print(RSS_traingset(train_X, train_Y))
+
+    print(RSS_testingset(test_X, test_Y))
+
+    print(do_predict(train_X, train_Y))
 
 
 if __name__ == '__main__':
