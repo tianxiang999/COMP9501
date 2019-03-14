@@ -1,6 +1,6 @@
 __author__ = 'Alan Shen'
 
-import numpy,math
+import numpy,math,random
 
 def readMatrix_NE(fileName):
     lineNum = 0
@@ -52,7 +52,7 @@ def readMatrix_SGD_RGD(fileName):
     f.close()
     return X1,Y1,X2,Y2
 
-def SGD_get_weights(x, y, verbose = 0,step_size=0.01, max_iter_count=10000):
+def SGD_get_weights(x, y, verbose = 0,step_size=0.00005, max_iter_count=10000):
     shape, dim = x.shape
     print(shape,dim)
     w = numpy.ones((dim,), dtype=numpy.float32)
@@ -61,23 +61,36 @@ def SGD_get_weights(x, y, verbose = 0,step_size=0.01, max_iter_count=10000):
     iteration = 0
 
     while loss > 0.001 and iteration < max_iter_count:
-        loss = 0
-        error = numpy.ones((dim,), dtype=numpy.float32)
-        for i in range(shape):
+        # loss = 0
+        # error = numpy.ones((dim,), dtype=numpy.float32)
+        # for i in range(shape):
+        #     predict_y = numpy.dot(w.T, x[i])
+        #     for j in range(dim):
+        #         error[j] += (y[i] - predict_y) * x[i][j]
+        #         print("  error= ",error[j])
+        #         w[j] += step_size * error[j] / shape
+        #         #print ("j = ",j,"w[j]= ",w[j])
+        # for i in range(shape):
+        #     predict_y = numpy.dot(w.T, x[i])
+        #     error = (1 / (shape * dim)) * numpy.power((predict_y - y[i]), 2)
+        #     loss += error
+        #
+        # print("iter_count: ", iteration, "the loss:", loss)
+        # iteration += 1
+        l = list(range(shape))
+        random.shuffle(l)
+        for i in l:
             predict_y = numpy.dot(w.T, x[i])
+            error = predict_y - y[i]
+
             for j in range(dim):
-                error[j] += (y[i] - predict_y) * x[i][j]
-                print("error= ",error[j])
-                w[j] += step_size * error[j] / shape
-                #print ("j = ",j,"w[j]= ",w[j])
-        for i in range(shape):
-            predict_y = numpy.dot(w.T, x[i])
-            error = (1 / (shape * dim)) * numpy.power((predict_y - y[i]), 2)
-            loss += error
+                w[j] = w[j] - step_size * error * x[i][j]
 
-        print("iter_count: ", iteration, "the loss:", loss)
-        iteration += 1
-
+            loss = 0
+            for k in range(shape):
+                loss += math.pow(y[k]-numpy.dot(w.T, x[k]),2)
+            loss /= 1000
+            print("loss",loss)
     return w
 
 def RGD_get_weights(x, y, verbose = 0,step_size=0.01, max_iter_count=10000):
@@ -133,10 +146,10 @@ def RSS_traingset(X,Y):
         sum +=f[0](i)
     return sum / 1000
 
-def RSS_testingset(X,Y):
-    var = normalEquation(X, Y)
+def RSS_testingset(X1,Y1,X2,Y2):
+    var = normalEquation(X1, Y1)
     sum = 0
-    f = [lambda i=i: math.pow(Y[i]-numpy.matrix(X[i]).dot(var),2) for i in range(100)]
+    f = [lambda i=i: math.pow(Y2[i]-numpy.matrix(X2[i]).dot(var),2) for i in range(100)]
     for i in range(100):
         sum +=f[0](i)
     return sum / 100
@@ -147,22 +160,26 @@ def do_predict(X,Y):
 def main():
 
     train_X, train_Y, test_X, test_Y = readMatrix_NE('HW2_linear_regression.txt')
-    print(train_Y)
-    print("Linear Regression")
-    print("RSS for training dataset is: ",RSS_traingset(train_X, train_Y))
-
-    print("RSS for testing dataset is: ",RSS_testingset(test_X, test_Y))
-
-    print("Prediction for (1,135) is ",do_predict(train_X, train_Y))
-
-    train_X2, train_Y2, test_X2, test_Y2 = readMatrix_NE('HW2_logistic_regression.txt')
-
-    print("Logistic Regression")
-    print("RSS for training dataset is: ", RSS_traingset(train_X2, train_Y2))
-
-    print("RSS for testing dataset is: ", RSS_testingset(test_X2, test_Y2))
-
-    print("Prediction for (1,135) is ", round(float(do_predict(train_X2, train_Y2))))
+    train_X2, train_Y2, test_X2, test_Y2 = readMatrix_SGD_RGD('HW2_linear_regression.txt')
+    print(train_X2[0][0])
+    # print(train_Y)
+    # print("Linear Regression")
+    # print("RSS for training dataset is: ",RSS_traingset(train_X, train_Y))
+    #
+    # print("RSS for testing dataset is: ",RSS_testingset(train_X, train_Y, test_X, test_Y))
+    #
+    # print("Prediction for (1,135) is ",do_predict(train_X, train_Y))
+    #
+    # train_X2, train_Y2, test_X2, test_Y2 = readMatrix_NE('HW2_logistic_regression.txt')
+    #
+    # print("Logistic Regression")
+    # print("RSS for training dataset is: ", RSS_traingset(train_X2, train_Y2))
+    #
+    # print("RSS for testing dataset is: ", RSS_testingset(train_X2, train_Y2, test_X2, test_Y2))
+    #
+    # print("Prediction for (1,135) is ", round(float(do_predict(train_X2, train_Y2))))
+    w = SGD_get_weights(train_X2, train_Y2)
+    print(w)
 
 if __name__ == '__main__':
   main()
